@@ -19,7 +19,28 @@ const error = document.getElementById("uv-error");
  * @type {HTMLPreElement}
  */
 const errorCode = document.getElementById("uv-error-code");
+const frame = document.getElementById("uv-frame");
+
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+
+const wispUrl =
+	(location.protocol === "https:" ? "wss" : "ws") +
+	"://" +
+	location.host +
+	"/wisp/";
+
+// Initialize Service Worker and Epoxy Transport immediately
+async function initializeProxy() {
+	try {
+		await registerSW();
+		await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+		console.log("BareMux & Epoxy Transport initialized with:", wispUrl);
+	} catch (err) {
+		console.warn("Proxy initialization warning:", err);
+	}
+}
+
+initializeProxy();
 
 form.addEventListener("submit", async (event) => {
 	event.preventDefault();
@@ -32,19 +53,15 @@ form.addEventListener("submit", async (event) => {
 		throw err;
 	}
 
+	try {
+		// Ensure transport is set with accurate wispUrl
+		await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+	} catch (err) {
+		console.error("Failed to set Epoxy transport:", err);
+	}
+
 	const url = search(address.value, searchEngine.value);
 
-	let frame = document.getElementById("uv-frame");
 	frame.style.display = "block";
-	let wispUrl =
-		(location.protocol === "https:" ? "wss" : "ws") +
-		"://" +
-		location.host +
-		"/wisp/";
-	if ((await connection.getTransport()) !== "/epoxy/index.mjs") {
-		await connection.setTransport("/epoxy/index.mjs", [
-			{ wisp: wispUrl },
-		]);
-	}
 	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
 });

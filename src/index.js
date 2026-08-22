@@ -44,6 +44,7 @@ const server = createServer(app);
 // WebSocket upgrade handling for Wisp protocol
 server.on("upgrade", (req, socket, head) => {
 	if (req.url.endsWith("/wisp/") || req.url.startsWith("/wisp")) {
+		req.url = "/wisp/";
 		wisp.routeRequest(req, socket, head);
 		return;
 	}
