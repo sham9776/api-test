@@ -7,7 +7,7 @@
 		"node": ">=20.0.0"
 	},
 	"scripts": {
-		"start": "node src/index.js",
+		"start": "node --dns-result-order=ipv4first src/index.js",
 		"format": "prettier --write .",
 		"lint": "eslint ./src/",
 		"lint:fix": "eslint ./src/ --fix"

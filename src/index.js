@@ -2,6 +2,7 @@ import { join } from "node:path";
 import { hostname } from "node:os";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
+import dns from "node:dns";
 import express from "express";
 import compression from "compression";
 import wisp from "wisp-server-node";
@@ -9,6 +10,12 @@ import wisp from "wisp-server-node";
 import { uvPath } from "@titaniumnetwork-dev/ultraviolet";
 import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
+
+// 🚀 Force IPv4 priority over IPv6 across all Node.js DNS lookups
+// This prevents Google / Cloudflare from triggering datacenter IPv6 bot CAPTCHAs
+if (dns.setDefaultResultOrder) {
+	dns.setDefaultResultOrder("ipv4first");
+}
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const publicPath = join(__dirname, "../public");

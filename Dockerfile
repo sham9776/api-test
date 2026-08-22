@@ -12,6 +12,7 @@ RUN npm install --production
 # Copy source code and static assets
 COPY . .
 
+ENV NODE_OPTIONS="--dns-result-order=ipv4first"
 EXPOSE 8080
 
 CMD ["npm", "start"]
