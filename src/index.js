@@ -3,6 +3,7 @@ import { hostname } from "node:os";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import express from "express";
+import compression from "compression";
 import wisp from "wisp-server-node";
 
 import { uvPath } from "@titaniumnetwork-dev/ultraviolet";
@@ -13,6 +14,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const publicPath = join(__dirname, "../public");
 
 const app = express();
+
+// High-performance gzip/brotli compression for all HTTP responses
+app.use(compression({ level: 6 }));
 
 // Security and Isolation Headers (Required for SharedArrayBuffer & Service Worker)
 app.use((req, res, next) => {
@@ -26,13 +30,19 @@ app.get("/health", (req, res) => {
 	res.status(200).send("OK");
 });
 
-// Serve frontend static files
-app.use(express.static(publicPath));
+// Static cache options for maximum performance
+const cacheOptions = {
+	maxAge: "1d",
+	immutable: true,
+};
 
-// Serve vendor assets
-app.use("/uv/", express.static(uvPath));
-app.use("/epoxy/", express.static(epoxyPath));
-app.use("/baremux/", express.static(baremuxPath));
+// Serve frontend static files
+app.use(express.static(publicPath, { maxAge: "1h" }));
+
+// Serve vendor assets with high caching
+app.use("/uv/", express.static(uvPath, cacheOptions));
+app.use("/epoxy/", express.static(epoxyPath, cacheOptions));
+app.use("/baremux/", express.static(baremuxPath, cacheOptions));
 
 // 404 Fallback
 app.use((req, res) => {
