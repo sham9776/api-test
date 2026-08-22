@@ -14,29 +14,34 @@ const publicPath = join(__dirname, "../public");
 
 const app = express();
 
-// Load our publicPath first and prioritize it over UV.
+// Security and Isolation Headers (Required for SharedArrayBuffer & Service Worker)
+app.use((req, res, next) => {
+	res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+	res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+	next();
+});
+
+// Health check endpoint for Railway & cloud health checks
+app.get("/health", (req, res) => {
+	res.status(200).send("OK");
+});
+
+// Serve frontend static files
 app.use(express.static(publicPath));
 
-// Load vendor files.
-// The vendor's uv.config.js won't conflict with our uv.config.js inside the publicPath directory.
+// Serve vendor assets
 app.use("/uv/", express.static(uvPath));
 app.use("/epoxy/", express.static(epoxyPath));
 app.use("/baremux/", express.static(baremuxPath));
 
-// Error for everything else
+// 404 Fallback
 app.use((req, res) => {
-	res.status(404);
-	res.sendFile(join(publicPath, "404.html"));
+	res.status(404).sendFile(join(publicPath, "404.html"));
 });
 
-const server = createServer();
+const server = createServer(app);
 
-server.on("request", (req, res) => {
-	res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-	res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-	app(req, res);
-});
-
+// WebSocket upgrade handling for Wisp protocol
 server.on("upgrade", (req, socket, head) => {
 	if (req.url.endsWith("/wisp/") || req.url.startsWith("/wisp")) {
 		wisp.routeRequest(req, socket, head);
@@ -45,21 +50,14 @@ server.on("upgrade", (req, socket, head) => {
 	socket.end();
 });
 
-let port = parseInt(process.env.PORT || "");
-
-if (isNaN(port)) port = 8080;
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 
 server.on("listening", () => {
 	const address = server.address();
-
 	console.log("🚀 Web Proxy is listening on:");
+	console.log(`\thttp://0.0.0.0:${address.port}`);
 	console.log(`\thttp://localhost:${address.port}`);
 	console.log(`\thttp://${hostname()}:${address.port}`);
-	console.log(
-		`\thttp://${
-			address.family === "IPv6" ? `[${address.address}]` : address.address
-		}:${address.port}`
-	);
 });
 
 // Graceful shutdown
@@ -73,7 +71,4 @@ function shutdown() {
 	});
 }
 
-server.listen({
-	port,
-	host: "0.0.0.0",
-});
+server.listen(port, "0.0.0.0");

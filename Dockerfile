@@ -12,7 +12,6 @@ RUN npm install --production
 # Copy source code and static assets
 COPY . .
 
-ENV PORT=8080
 EXPOSE 8080
 
 CMD ["npm", "start"]
