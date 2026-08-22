@@ -2,25 +2,21 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Ultraviolet | Sophisticated Web Proxy</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+		<title>Cloud Browser | Zero-Install Web Gateway</title>
 		<meta
 			name="description"
-			content="Ultraviolet is a highly sophisticated proxy used for evading internet censorship or accessing websites in a controlled sandbox using the power of service-workers. Unblock sites today!"
+			content="Zero-install virtual cloud browser and proxy gateway. Access Telegram Web, WhatsApp Web, YouTube, AI tools, and the open web directly inside any browser tab without administrative rights."
 		/>
-		<meta
-			name="keywords"
-			content="proxy, web proxy, ultraviolet, service workers, unblock websites, free web proxy, online proxy, proxy server, proxy youtube"
-		/>
-		<meta
-			name="theme-color"
-			media="(prefers-color-scheme: dark)"
-			content="#1a1b26"
-		/>
-		<link rel="shortcut icon" href="favicon.ico" />
+		<meta name="keywords" content="web proxy, cloud browser, virtual browser, unblock, telegram web qr, whatsapp web, zero install" />
+		<meta name="theme-color" content="#0b0f19" />
+		<link rel="shortcut icon" href="favicon.ico" id="page-favicon" />
+		
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		
 		<link rel="stylesheet" href="index.css" />
 
 		<script src="baremux/index.js"></script>
@@ -29,69 +25,345 @@
 	</head>
 
 	<body>
-		<!-- Top Bar for Proxy Navigation (visible when browsing) -->
-		<div id="proxy-nav" class="proxy-nav" style="display: none;">
-			<button id="nav-home" title="Home">🏠</button>
-			<button id="nav-reload" title="Reload">🔄</button>
-			<input id="nav-address" type="text" placeholder="Enter URL or search..." />
-			<button id="nav-go">Go</button>
-			<button id="nav-close" title="Close Proxy">✖</button>
-		</div>
+		<!-- Background Glow Effects -->
+		<div class="ambient-glow glow-1"></div>
+		<div class="ambient-glow glow-2"></div>
 
-		<div id="main-content">
-			<div title="Ultraviolet Logo" class="flex-center logo-wrapper header-center">
-				<img class="logo" src="uv.png" alt="Ultraviolet" />
-				<h1>Ultraviolet Web Proxy</h1>
+		<!-- Virtual Browser Top Bar (Tabs & Omnibox) -->
+		<header id="browser-header" class="browser-header">
+			<!-- Tab Strip -->
+			<div class="tab-strip" id="tab-strip">
+				<div class="tabs-container" id="tabs-container">
+					<!-- Active / Inactive Tabs injected via JS -->
+				</div>
+				<button id="btn-new-tab" class="tab-action-btn" title="New Tab (Alt+T)">+</button>
 			</div>
 
-			<div class="flex-center desc">
-				<p>
-					A fast, highly sophisticated web proxy powered by Service Workers, Bare-Mux & Epoxy Transport.
-				</p>
-			</div>
+			<!-- Omnibox Toolbar -->
+			<div class="omnibox-toolbar" id="omnibox-toolbar">
+				<div class="nav-controls">
+					<button id="nav-back" class="nav-btn" title="Back">‹</button>
+					<button id="nav-forward" class="nav-btn" title="Forward">›</button>
+					<button id="nav-reload" class="nav-btn" title="Reload (R)">🔄</button>
+					<button id="nav-home" class="nav-btn" title="Home Dashboard">🏠</button>
+				</div>
 
-			<form id="uv-form" class="flex-center form-container">
-				<div class="search-box">
-					<select id="uv-search-engine" title="Search Engine" class="engine-select">
+				<div class="omnibox-container">
+					<div class="security-badge" title="Encrypted Sandboxed Connection">
+						<span class="lock-icon">🔒</span>
+						<span class="badge-text">Secure Cloud</span>
+					</div>
+
+					<select id="uv-search-engine" class="engine-dropdown" title="Search Engine">
 						<option value="https://duckduckgo.com/?q=%s" selected>🦆 DuckDuckGo</option>
+						<option value="https://www.google.com/search?q=%s">🌐 Google</option>
 						<option value="https://www.bing.com/search?q=%s">🔎 Bing</option>
 						<option value="https://search.brave.com/search?q=%s">⚡ Brave</option>
-						<option value="https://www.google.com/search?q=%s">🌐 Google</option>
+						<option value="https://www.youtube.com/results?search_query=%s">📺 YouTube</option>
 					</select>
-					<input id="uv-address" type="text" placeholder="Enter URL (e.g. youtube.com) or search freely..." autocomplete="off" />
-					<button type="submit" id="uv-submit" class="submit-btn">Browse</button>
-				</div>
-			</form>
 
-			<!-- Quick Shortcuts -->
-			<div class="shortcuts-container flex-center">
-				<div class="shortcut-chip" data-url="https://www.youtube.com">📺 YouTube</div>
-				<div class="shortcut-chip" data-url="https://www.wikipedia.org">🌐 Wikipedia</div>
-				<div class="shortcut-chip" data-url="https://www.reddit.com">🤖 Reddit</div>
-				<div class="shortcut-chip" data-url="https://github.com">🐙 GitHub</div>
-				<div class="shortcut-chip" data-url="https://discord.com">💬 Discord</div>
-				<div class="shortcut-chip" data-url="https://duckduckgo.com">🦆 DuckDuckGo</div>
+					<input
+						id="uv-address"
+						class="omnibox-input"
+						type="text"
+						placeholder="Search web or enter URL (e.g. web.telegram.org, youtube.com)..."
+						autocomplete="off"
+						spellcheck="false"
+					/>
+
+					<button id="uv-submit" class="omnibox-go-btn" title="Navigate">Go ➔</button>
+				</div>
+
+				<div class="quick-tools">
+					<button id="btn-add-bookmark" class="tool-btn" title="Bookmark this Page">⭐</button>
+					<button id="btn-stealth" class="tool-btn stealth-btn" title="Office Stealth Disguise (Cloak Tab)">🎭 Cloak</button>
+					<button id="btn-fullscreen" class="tool-btn" title="Fullscreen">⛶</button>
+					<button id="nav-close" class="tool-btn close-btn" title="Exit to Dashboard">✖</button>
+				</div>
 			</div>
+		</header>
 
-			<div class="desc center-text">
-				<p id="uv-error"></p>
-				<pre id="uv-error-code"></pre>
+		<!-- Main Workspace (Home Dashboard) -->
+		<main id="main-content" class="main-content">
+			<div class="dashboard-wrapper">
+				<!-- Hero Section -->
+				<header class="hero-section">
+					<div class="status-pill">
+						<span class="pulse-dot"></span>
+						<span class="status-title">Zero-Install Gateway</span>
+						<span class="status-divider">•</span>
+						<span class="status-proto">Wisp + Epoxy v2</span>
+					</div>
+					<h1 class="hero-title">
+						Cloud <span class="gradient-text">Browser</span>
+					</h1>
+					<p class="hero-subtitle">
+						مرورگر ابری بدون نیاز به ادمین و نصب برنامه | وب‌گردی آزاد و دسترسی به پیام‌رسان‌ها
+					</p>
+				</header>
+
+				<!-- Central Search Form -->
+				<form id="uv-form" class="main-search-form">
+					<div class="search-glass-box">
+						<span class="search-icon">🔍</span>
+						<input
+							id="main-search-input"
+							type="text"
+							class="main-search-input"
+							placeholder="آدرس سایت (مثلاً web.telegram.org) یا متن جستجو..."
+							autocomplete="off"
+							autofocus
+						/>
+						<button type="submit" class="main-search-btn">
+							<span>ورود به سایت</span>
+							<span class="arrow-icon">➔</span>
+						</button>
+					</div>
+				</form>
+
+				<!-- App Categories Grid -->
+				<section class="apps-section">
+					<!-- Category 1: Messengers -->
+					<div class="category-block">
+						<div class="category-header">
+							<span class="cat-icon">💬</span>
+							<h2>پیام‌رسان‌ها و ارتباطات</h2>
+							<span class="cat-badge">Login with QR Code</span>
+						</div>
+						<div class="apps-grid">
+							<div class="app-card featured" data-url="https://web.telegram.org/k/">
+								<div class="app-icon-wrapper telegram-bg">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.05-.49-.83-.27-1.49-.42-1.43-.88.03-.24.38-.49 1.04-.75 4.07-1.77 6.78-2.94 8.15-3.51 3.88-1.62 4.69-1.9 5.21-1.91.12 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.21-.03.35z"/></svg>
+								</div>
+								<div class="app-info">
+									<h3>Telegram Web</h3>
+									<p>ورود مستقیم با QR Code تلگرام</p>
+								</div>
+								<span class="launch-tag">Open QR</span>
+							</div>
+
+							<div class="app-card featured" data-url="https://web.whatsapp.com">
+								<div class="app-icon-wrapper whatsapp-bg">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24h.02zm-3.54 3.12c-.19 0-.5.07-.76.35-.26.29-1 1-1 2.43s1.02 2.82 1.16 3.02c.15.19 2.01 3.07 4.88 4.31.68.29 1.22.47 1.63.6.69.22 1.31.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34-.29-.15-1.7-.84-1.96-.94-.26-.09-.45-.14-.64.15-.19.29-.74.94-.91 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.43-.51.15-.17.19-.29.29-.48.09-.19.05-.36-.02-.51-.08-.14-.64-1.54-.87-2.11-.23-.56-.47-.48-.65-.49l-.55-.01z"/></svg>
+								</div>
+								<div class="app-info">
+									<h3>WhatsApp Web</h3>
+									<p>ورود با اسکن بارکد واتساپ</p>
+								</div>
+								<span class="launch-tag">Open QR</span>
+							</div>
+
+							<div class="app-card" data-url="https://discord.com/app">
+								<div class="app-icon-wrapper discord-bg">🎮</div>
+								<div class="app-info">
+									<h3>Discord Web</h3>
+									<p>چت و سرورهای دیسکورد</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://x.com">
+								<div class="app-icon-wrapper twitter-bg">𝕏</div>
+								<div class="app-info">
+									<h3>X (Twitter)</h3>
+									<p>اخبار و شبکه‌های اجتماعی</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://www.instagram.com">
+								<div class="app-icon-wrapper insta-bg">📸</div>
+								<div class="app-info">
+									<h3>Instagram</h3>
+									<p>نسخه وب اینستاگرام</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://www.reddit.com">
+								<div class="app-icon-wrapper reddit-bg">🤖</div>
+								<div class="app-info">
+									<h3>Reddit</h3>
+									<p>انجمن‌ها و گفتگوها</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Category 2: Media & Streaming -->
+					<div class="category-block">
+						<div class="category-header">
+							<span class="cat-icon">📺</span>
+							<h2>رسانه و ویدیو</h2>
+						</div>
+						<div class="apps-grid">
+							<div class="app-card featured" data-url="https://www.youtube.com">
+								<div class="app-icon-wrapper youtube-bg">📺</div>
+								<div class="app-info">
+									<h3>YouTube</h3>
+									<p>تماشای ویدیوها بدون محدودیت</p>
+								</div>
+								<span class="launch-tag">Fast Stream</span>
+							</div>
+
+							<div class="app-card" data-url="https://open.spotify.com">
+								<div class="app-icon-wrapper spotify-bg">🎵</div>
+								<div class="app-info">
+									<h3>Spotify Web</h3>
+									<p>پخش موسیقی و پادکست</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://www.twitch.tv">
+								<div class="app-icon-wrapper twitch-bg">👾</div>
+								<div class="app-info">
+									<h3>Twitch</h3>
+									<p>استریم زنده بازی‌ها</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://soundcloud.com">
+								<div class="app-icon-wrapper sc-bg">☁️</div>
+								<div class="app-info">
+									<h3>SoundCloud</h3>
+									<p>موزیک و ریمیکس‌ها</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Category 3: AI & Tools -->
+					<div class="category-block">
+						<div class="category-header">
+							<span class="cat-icon">⚡</span>
+							<h2>هوش مصنوعی و ابزارها</h2>
+						</div>
+						<div class="apps-grid">
+							<div class="app-card featured" data-url="https://chatgpt.com">
+								<div class="app-icon-wrapper gpt-bg">🧠</div>
+								<div class="app-info">
+									<h3>ChatGPT</h3>
+									<p>دستیار هوش مصنوعی OpenAI</p>
+								</div>
+								<span class="launch-tag">AI</span>
+							</div>
+
+							<div class="app-card" data-url="https://claude.ai">
+								<div class="app-icon-wrapper claude-bg">🤖</div>
+								<div class="app-info">
+									<h3>Claude AI</h3>
+									<p>هوش مصنوعی پیشرفته Anthropic</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://github.com">
+								<div class="app-icon-wrapper github-bg">🐙</div>
+								<div class="app-info">
+									<h3>GitHub</h3>
+									<p>مخازن کد و برنامه‌نویسی</p>
+								</div>
+							</div>
+
+							<div class="app-card" data-url="https://www.wikipedia.org">
+								<div class="app-icon-wrapper wiki-bg">🌐</div>
+								<div class="app-info">
+									<h3>Wikipedia</h3>
+									<p>دانشنامه آزاد جهانی</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Category 4: Custom Bookmarks -->
+					<div class="category-block">
+						<div class="category-header">
+							<span class="cat-icon">⭐</span>
+							<h2>بوک‌مارک‌های من</h2>
+							<button id="btn-open-add-bookmark" class="add-bookmark-btn">+ افزودن سایت</button>
+						</div>
+						<div class="apps-grid" id="bookmarks-grid">
+							<!-- Bookmarks dynamically rendered from localStorage -->
+						</div>
+					</div>
+				</section>
+
+				<!-- Error / Diagnostic Box -->
+				<div class="error-container">
+					<p id="uv-error" class="error-msg"></p>
+					<pre id="uv-error-code" class="error-code"></pre>
+				</div>
+
+				<!-- Footer -->
+				<footer class="dashboard-footer">
+					<div class="footer-tips">
+						<span>💡 راهنما: برای خروج سریع در محیط کار می‌توانید کلید <code>Esc</code> را بزنید یا از دکمه <strong>🎭 Cloak</strong> برای تغییر نام تب استفاده کنید.</span>
+					</div>
+					<div class="footer-bottom">
+						<span>Cloud Virtual Browser • Zero Admin Install</span>
+					</div>
+				</footer>
 			</div>
+		</main>
 
-			<footer>
-				<div class="footer-links">
-					<a href="https://github.com/titaniumnetwork-dev/Ultraviolet-App" target="_blank" rel="noopener">GitHub</a>
-					<a href="https://discord.gg/unblock" target="_blank" rel="noopener">Discord</a>
-					<a href="credits.html">Credits & License</a>
-				</div>
-				<div class="copyright">
-					<span>Ultraviolet &copy; TitaniumNetwork & Railway</span>
-				</div>
-			</footer>
+		<!-- Multi-Tab Browser Iframe Viewport Container -->
+		<div id="browser-viewport" class="browser-viewport" style="display: none;">
+			<!-- Individual tab iframes injected dynamically here -->
 		</div>
 
-		<iframe id="uv-frame" style="display: none;"></iframe>
+		<!-- Stealth Cloaking Modal -->
+		<div id="cloak-modal" class="modal-backdrop" style="display: none;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>🎭 مخفی‌سازی تب (Tab Cloaking)</h3>
+					<button id="btn-close-cloak-modal" class="modal-close-btn">✖</button>
+				</div>
+				<p class="modal-desc">
+					عنوان و آیکون این تب را شبیه به یک سایت کاری/آموزشی کنید تا در مانیتورینگ ادمین عادی به نظر برسد:
+				</p>
+				<div class="cloak-options-grid">
+					<button class="cloak-opt-btn" data-title="Google Docs" data-icon="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
+						📄 Google Docs
+					</button>
+					<button class="cloak-opt-btn" data-title="Google Drive" data-icon="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">
+						📁 Google Drive
+					</button>
+					<button class="cloak-opt-btn" data-title="Wikipedia" data-icon="https://en.wikipedia.org/static/favicon/wikipedia.ico">
+						🌐 Wikipedia
+					</button>
+					<button class="cloak-opt-btn" data-title="Google Classroom" data-icon="https://ssl.gstatic.com/classroom/favicon.png">
+						🎓 Google Classroom
+					</button>
+					<button class="cloak-opt-btn" data-title="Inbox (3) - Gmail" data-icon="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico">
+						✉️ Gmail
+					</button>
+					<button class="cloak-opt-btn reset-cloak" data-title="Cloud Browser | Zero-Install Web Gateway" data-icon="favicon.ico">
+						🔄 بازگردانی به حالت اول
+					</button>
+				</div>
+			</div>
+		</div>
 
+		<!-- Add Bookmark Modal -->
+		<div id="bookmark-modal" class="modal-backdrop" style="display: none;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>⭐ افزودن بوک‌مارک جدید</h3>
+					<button id="btn-close-bm-modal" class="modal-close-btn">✖</button>
+				</div>
+				<form id="bm-form" class="modal-form">
+					<div class="form-group">
+						<label>نام سایت:</label>
+						<input type="text" id="bm-title-input" placeholder="مثال: سایت خبری یا کاری" required />
+					</div>
+					<div class="form-group">
+						<label>آدرس اینترنتی (URL):</label>
+						<input type="text" id="bm-url-input" placeholder="مثال: https://example.com" required />
+					</div>
+					<div class="modal-actions">
+						<button type="submit" class="primary-btn">ذخیره بوک‌مارک</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Scripts -->
 		<script src="register-sw.js"></script>
 		<script src="search.js"></script>
 		<script src="index.js"></script>
