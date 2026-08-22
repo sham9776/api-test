@@ -1,32 +1,59 @@
 "use strict";
 /**
- *
+ * Smart Search and URL resolver
  * @param {string} input
  * @param {string} template Template for a search query.
  * @returns {string} Fully qualified URL
  */
 function search(input, template) {
+	input = input.trim();
+
+	// 1. Direct Popular Shortcuts (Instant navigation without search engine captcha)
+	const popularAliases = {
+		youtube: "https://www.youtube.com",
+		yt: "https://www.youtube.com",
+		telegram: "https://web.telegram.org/k/",
+		tg: "https://web.telegram.org/k/",
+		whatsapp: "https://web.whatsapp.com",
+		wa: "https://web.whatsapp.com",
+		discord: "https://discord.com/app",
+		instagram: "https://www.instagram.com",
+		insta: "https://www.instagram.com",
+		twitter: "https://x.com",
+		x: "https://x.com",
+		reddit: "https://www.reddit.com",
+		github: "https://github.com",
+		chatgpt: "https://chatgpt.com",
+		claude: "https://claude.ai",
+		spotify: "https://open.spotify.com",
+		wiki: "https://www.wikipedia.org",
+		wikipedia: "https://www.wikipedia.org",
+	};
+
+	const lower = input.toLowerCase();
+	if (popularAliases[lower]) {
+		return popularAliases[lower];
+	}
+
 	try {
 		// input is a valid URL:
-		// eg: https://example.com, https://example.com/test?q=param
 		return new URL(input).toString();
 	} catch (err) {
-		// input was not a valid URL
+		// not a full URL
 	}
 
 	try {
-		// input is a valid URL when http:// is added to the start:
-		// eg: example.com, https://example.com/test?q=param
-		const url = new URL(`http://${input}`);
-		// only if the hostname has a TLD/subdomain
-		if (url.hostname.includes(".")) return url.toString();
+		// input is a domain: e.g. youtube.com, google.com, test.org
+		const url = new URL(`https://${input}`);
+		if (url.hostname.includes(".") && !input.includes(" ")) {
+			return url.toString();
+		}
 	} catch (err) {
-		// input was not valid URL
+		// not a simple domain
 	}
 
-	// input may have been a valid URL, however the hostname was invalid
-
-	// Attempts to convert the input to a fully qualified URL have failed
-	// Treat the input as a search query
-	return template.replace("%s", encodeURIComponent(input));
+	// Default fallback to reliable search engine
+	const engine = template || "https://duckduckgo.com/?q=%s";
+	return engine.replace("%s", encodeURIComponent(input));
 }
+
